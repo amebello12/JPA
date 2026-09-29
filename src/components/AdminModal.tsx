@@ -623,7 +623,7 @@ _L'équipe AJCD Cogne Diola & Amaya_`;
               <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-xs text-slate-300 space-y-1">
                 <span className="text-amber-400 font-bold block text-[11px] uppercase tracking-wider">Identifiants demandés :</span>
                 <div>Identifiant : <strong className="text-white font-mono">AJCD</strong></div>
-                <div>Mot de passe : <strong className="text-white font-mono">cognediola26</strong></div>
+                <div>Mot de passe : <strong className="text-white font-mono">cognediola</strong></div>
               </div>
             </form>
           </div>
