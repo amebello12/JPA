@@ -52,8 +52,21 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   onOpenScanner,
   onDataUpdated 
 }) => {
-  const [token, setToken] = useState<string | null>(() => sessionStorage.getItem('jn_admin_token'));
-  const [usernameInput, setUsernameInput] = useState<string>('AJCD');
+  const [token, setToken] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem('jn_admin_token') || sessionStorage.getItem('jn_admin_token') || null;
+    } catch {
+      return null;
+    }
+  });
+  const [rememberMe, setRememberMe] = useState<boolean>(true);
+  const [usernameInput, setUsernameInput] = useState<string>(() => {
+    try {
+      return localStorage.getItem('jn_admin_username') || 'AJCD';
+    } catch {
+      return 'AJCD';
+    }
+  });
   const [passwordInput, setPasswordInput] = useState<string>('');
   const [authError, setAuthError] = useState<string>('');
   const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false);
@@ -141,6 +154,11 @@ export const AdminModal: React.FC<AdminModalProps> = ({
         setPrograms(eventRes.programs);
         setSettings(eventRes.settings);
       }
+
+      // If token is invalid or expired
+      if (statsRes.success === false && statsRes.message?.includes('Token')) {
+        handleLogout();
+      }
     } catch (err) {
       console.error('Error fetching admin data', err);
     } finally {
@@ -163,7 +181,16 @@ export const AdminModal: React.FC<AdminModalProps> = ({
       const res = await api.adminLogin(usernameInput.trim(), passwordInput.trim());
       if (res && res.success && res.token) {
         setToken(res.token);
-        sessionStorage.setItem('jn_admin_token', res.token);
+        if (rememberMe) {
+          try {
+            localStorage.setItem('jn_admin_token', res.token);
+            localStorage.setItem('jn_admin_username', usernameInput.trim());
+          } catch {}
+        } else {
+          try {
+            sessionStorage.setItem('jn_admin_token', res.token);
+          } catch {}
+        }
         fetchAdminData(res.token);
       } else {
         setAuthError(res?.message || 'Identifiant ou mot de passe incorrect.');
@@ -177,7 +204,10 @@ export const AdminModal: React.FC<AdminModalProps> = ({
 
   const handleLogout = () => {
     setToken(null);
-    sessionStorage.removeItem('jn_admin_token');
+    try {
+      localStorage.removeItem('jn_admin_token');
+      sessionStorage.removeItem('jn_admin_token');
+    } catch {}
   };
 
   const showNotification = (msg: string) => {
@@ -602,6 +632,18 @@ _L'équipe AJCD Cogne Diola & Amaya_`;
                     onChange={e => setPasswordInput(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/15 focus:border-amber-400 text-white text-sm outline-none"
                   />
+                </div>
+
+                <div className="pt-1 flex items-center justify-between">
+                  <label className="flex items-center gap-2 cursor-pointer select-none text-xs text-slate-300 hover:text-white">
+                    <input
+                      type="checkbox"
+                      checked={rememberMe}
+                      onChange={e => setRememberMe(e.target.checked)}
+                      className="w-4 h-4 rounded accent-amber-400 bg-black/60 border border-white/20 cursor-pointer"
+                    />
+                    <span>Rester connecté sur cet appareil</span>
+                  </label>
                 </div>
 
                 {authError && (

@@ -888,7 +888,7 @@ class CentralDatabase {
       const token = `adm_token_${crypto.randomBytes(16).toString('hex')}`;
       this.data.admin_sessions[token] = {
         username: cleanUser,
-        expires_at: Date.now() + 7 * 24 * 3600 * 1000 // 7 days
+        expires_at: Date.now() + 90 * 24 * 3600 * 1000 // 90 days persistent session
       };
       this.persist();
       return { 
