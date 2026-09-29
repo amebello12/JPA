@@ -34,7 +34,8 @@ import {
   ExternalLink,
   MessageCircle,
   Send,
-  Copy
+  Copy,
+  EyeOff
 } from 'lucide-react';
 import { api } from '../services/api.js';
 import { Order, Ticket as TicketItem, Customer, PromoCode, EventItem, TicketType, ProgramItem, AppSettings } from '../types/index.js';
@@ -44,32 +45,17 @@ interface AdminModalProps {
   onClose: () => void;
   onOpenScanner: () => void;
   onDataUpdated?: () => void;
+  onLockAccess?: () => void;
 }
 
 export const AdminModal: React.FC<AdminModalProps> = ({ 
   isOpen, 
   onClose, 
   onOpenScanner,
-  onDataUpdated 
+  onDataUpdated,
+  onLockAccess
 }) => {
-  const [token, setToken] = useState<string | null>(() => {
-    try {
-      return localStorage.getItem('jn_admin_token') || sessionStorage.getItem('jn_admin_token') || null;
-    } catch {
-      return null;
-    }
-  });
-  const [rememberMe, setRememberMe] = useState<boolean>(true);
-  const [usernameInput, setUsernameInput] = useState<string>(() => {
-    try {
-      return localStorage.getItem('jn_admin_username') || 'AJCD';
-    } catch {
-      return 'AJCD';
-    }
-  });
-  const [passwordInput, setPasswordInput] = useState<string>('');
-  const [authError, setAuthError] = useState<string>('');
-  const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false);
+  const token = 'direct_admin_access';
 
   // Active Tab
   const [activeTab, setActiveTab] = useState<'dashboard' | 'content' | 'tickets_config' | 'orders' | 'tickets' | 'participants' | 'promos' | 'program'>('content');
@@ -131,15 +117,15 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     copied: false
   });
 
-  const fetchAdminData = async (authToken: string) => {
+  const fetchAdminData = async (_authToken?: string) => {
     setLoading(true);
     try {
       const [statsRes, ordersRes, ticketsRes, partRes, promosRes, eventRes] = await Promise.all([
-        api.getAdminStats(authToken),
-        api.getAdminOrders(authToken),
-        api.getAdminTickets(authToken),
-        api.getAdminParticipants(authToken),
-        api.getAdminPromoCodes(authToken),
+        api.getAdminStats(token),
+        api.getAdminOrders(token),
+        api.getAdminTickets(token),
+        api.getAdminParticipants(token),
+        api.getAdminPromoCodes(token),
         api.getEventData()
       ]);
 
@@ -154,11 +140,6 @@ export const AdminModal: React.FC<AdminModalProps> = ({
         setPrograms(eventRes.programs);
         setSettings(eventRes.settings);
       }
-
-      // If token is invalid or expired
-      if (statsRes.success === false && statsRes.message?.includes('Token')) {
-        handleLogout();
-      }
     } catch (err) {
       console.error('Error fetching admin data', err);
     } finally {
@@ -167,48 +148,10 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   };
 
   useEffect(() => {
-    if (isOpen && token) {
-      fetchAdminData(token);
+    if (isOpen) {
+      fetchAdminData();
     }
-  }, [isOpen, token]);
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsAuthenticating(true);
-    setAuthError('');
-
-    try {
-      const res = await api.adminLogin(usernameInput.trim(), passwordInput.trim());
-      if (res && res.success && res.token) {
-        setToken(res.token);
-        if (rememberMe) {
-          try {
-            localStorage.setItem('jn_admin_token', res.token);
-            localStorage.setItem('jn_admin_username', usernameInput.trim());
-          } catch {}
-        } else {
-          try {
-            sessionStorage.setItem('jn_admin_token', res.token);
-          } catch {}
-        }
-        fetchAdminData(res.token);
-      } else {
-        setAuthError(res?.message || 'Identifiant ou mot de passe incorrect.');
-      }
-    } catch (err: any) {
-      setAuthError(err?.message || 'Erreur de connexion au serveur.');
-    } finally {
-      setIsAuthenticating(false);
-    }
-  };
-
-  const handleLogout = () => {
-    setToken(null);
-    try {
-      localStorage.removeItem('jn_admin_token');
-      sessionStorage.removeItem('jn_admin_token');
-    } catch {}
-  };
+  }, [isOpen]);
 
   const showNotification = (msg: string) => {
     setSaveSuccessMsg(msg);
@@ -564,12 +507,15 @@ _L'équipe AJCD Cogne Diola & Amaya_`;
           </div>
 
           <div className="flex items-center gap-3">
-            {token && (
+            {onLockAccess && (
               <button
-                onClick={handleLogout}
-                className="text-xs font-medium text-slate-400 hover:text-white underline"
+                type="button"
+                onClick={onLockAccess}
+                title="Masquer à nouveau l'accès administrateur sur ce navigateur"
+                className="text-xs text-slate-400 hover:text-amber-400 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
               >
-                Déconnexion
+                <EyeOff className="w-3.5 h-3.5 text-amber-400" />
+                <span className="hidden sm:inline">Masquer l'accès</span>
               </button>
             )}
             <button
@@ -589,89 +535,8 @@ _L'équipe AJCD Cogne Diola & Amaya_`;
           </div>
         )}
 
-        {/* If not logged in -> Login Screen with Identifiant & Mot de passe */}
-        {!token ? (
-          <div className="flex-1 flex items-center justify-center p-8">
-            <form onSubmit={handleLogin} className="max-w-md w-full space-y-6 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-purple-900/40 border border-purple-500/40 flex items-center justify-center mx-auto text-purple-400 shadow-xl">
-                <Lock className="w-8 h-8" />
-              </div>
-              <div>
-                <h4 className="text-2xl font-black text-white font-display uppercase tracking-tight">
-                  Connexion Administration
-                </h4>
-                <p className="text-xs text-slate-400 mt-1">
-                  Accès réservé aux organisateurs AJCD Cogne Diola et Amaya.
-                </p>
-              </div>
-
-              <div className="space-y-3 text-left">
-                <div>
-                  <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block mb-1">
-                    Identifiant
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Identifiant (ex: AJCD)"
-                    value={usernameInput}
-                    onChange={e => setUsernameInput(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/15 focus:border-amber-400 text-white text-sm outline-none font-bold tracking-wider uppercase"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block mb-1">
-                    Mot de passe
-                  </label>
-                  <input
-                    type="password"
-                    required
-                    placeholder="Mot de passe"
-                    value={passwordInput}
-                    onChange={e => setPasswordInput(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/15 focus:border-amber-400 text-white text-sm outline-none"
-                  />
-                </div>
-
-                <div className="pt-1 flex items-center justify-between">
-                  <label className="flex items-center gap-2 cursor-pointer select-none text-xs text-slate-300 hover:text-white">
-                    <input
-                      type="checkbox"
-                      checked={rememberMe}
-                      onChange={e => setRememberMe(e.target.checked)}
-                      className="w-4 h-4 rounded accent-amber-400 bg-black/60 border border-white/20 cursor-pointer"
-                    />
-                    <span>Rester connecté sur cet appareil</span>
-                  </label>
-                </div>
-
-                {authError && (
-                  <div className="text-xs text-red-400 font-medium bg-red-950/40 border border-red-500/30 p-2.5 rounded-lg flex items-center gap-1.5">
-                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                    <span>{authError}</span>
-                  </div>
-                )}
-              </div>
-
-              <button
-                type="submit"
-                disabled={isAuthenticating}
-                className="w-full py-4 rounded-xl font-black text-xs uppercase tracking-wider text-black bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 shadow-xl shadow-amber-500/25 transition-all"
-              >
-                {isAuthenticating ? 'Vérification en cours...' : 'Se Connecter à l’Administration'}
-              </button>
-
-              <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-xs text-slate-300 space-y-1">
-                <span className="text-amber-400 font-bold block text-[11px] uppercase tracking-wider">Identifiants demandés :</span>
-                <div>Identifiant : <strong className="text-white font-mono">AJCD</strong></div>
-                <div>Mot de passe : <strong className="text-white font-mono">cognediola</strong></div>
-              </div>
-            </form>
-          </div>
-        ) : (
-          /* Logged In Dashboard Layout */
-          <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+        {/* Administration Dashboard Layout (Direct Access) */}
+        <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
             
             {/* Sidebar Navigation */}
             <div className="w-full md:w-64 border-r border-white/10 bg-[#0c101c] p-4 flex md:flex-col justify-between overflow-x-auto">
@@ -1851,7 +1716,6 @@ _L'équipe AJCD Cogne Diola & Amaya_`;
 
             </div>
           </div>
-        )}
 
         {/* WHATSAPP TICKET SENDER POPUP MODAL */}
         {whatsappModal.isOpen && (

@@ -14,7 +14,8 @@ import {
 interface HeaderProps {
   onOpenBooking: () => void;
   onOpenScanner: () => void;
-  onOpenAdmin: () => void;
+  onOpenAdmin?: () => void;
+  showAdminButton?: boolean;
   darkMode: boolean;
   onToggleTheme: () => void;
 }
@@ -23,6 +24,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenBooking,
   onOpenScanner,
   onOpenAdmin,
+  showAdminButton = false,
   darkMode,
   onToggleTheme
 }) => {
@@ -88,14 +90,16 @@ export const Header: React.FC<HeaderProps> = ({
               <span>Scanner</span>
             </button>
 
-            {/* Admin button */}
-            <button
-              onClick={onOpenAdmin}
-              title="Administration"
-              className="p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg border border-white/5 transition-colors"
-            >
-              <Shield className="w-4 h-4" />
-            </button>
+            {/* Admin button (hidden from public visitors, visible only when organizer unlocks it) */}
+            {showAdminButton && onOpenAdmin && (
+              <button
+                onClick={onOpenAdmin}
+                title="Espace Organisateur (Déverrouillé)"
+                className="p-2 text-amber-400 hover:text-white bg-amber-500/10 hover:bg-amber-500/20 rounded-lg border border-amber-500/30 transition-colors animate-fadeIn"
+              >
+                <Shield className="w-4 h-4" />
+              </button>
+            )}
 
             {/* Primary CTA */}
             <button
@@ -159,16 +163,18 @@ export const Header: React.FC<HeaderProps> = ({
                 <QrCode className="w-4 h-4 text-purple-400" />
                 Contrôle Entrée
               </button>
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onOpenAdmin();
-                }}
-                className="py-2.5 px-3 rounded-lg text-xs font-medium text-center bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center gap-1.5"
-              >
-                <Shield className="w-4 h-4 text-amber-400" />
-                Admin
-              </button>
+              {showAdminButton && onOpenAdmin && (
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onOpenAdmin();
+                  }}
+                  className="py-2.5 px-3 rounded-lg text-xs font-medium text-center bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center gap-1.5 animate-fadeIn"
+                >
+                  <Shield className="w-4 h-4" />
+                  Admin
+                </button>
+              )}
             </div>
           </div>
         </div>

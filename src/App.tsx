@@ -148,6 +148,29 @@ export default function App() {
   const [selectedTicketType, setSelectedTicketType] = useState<TicketType | null>(null);
   const [isScannerOpen, setIsScannerOpen] = useState<boolean>(false);
   const [isAdminOpen, setIsAdminOpen] = useState<boolean>(false);
+  const [isAdminUnlocked, setIsAdminUnlocked] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('jn_admin_unlocked') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const unlockAndOpenAdmin = () => {
+    setIsAdminUnlocked(true);
+    setIsAdminOpen(true);
+    try {
+      localStorage.setItem('jn_admin_unlocked', 'true');
+    } catch {}
+  };
+
+  const lockAdminAccess = () => {
+    setIsAdminUnlocked(false);
+    setIsAdminOpen(false);
+    try {
+      localStorage.removeItem('jn_admin_unlocked');
+    } catch {}
+  };
 
   // Digital Ticket view state (when an order is created & confirmed)
   const [confirmedOrder, setConfirmedOrder] = useState<Order | null>(null);
@@ -194,6 +217,40 @@ export default function App() {
     return () => {
       window.removeEventListener('jn_event_updated', handleEventUpdated);
       window.removeEventListener('focus', fetchData);
+    };
+  }, []);
+
+  // Listen for admin triggers: URL hash (#admin, #organisateur), query param (?admin), Alt+A shortcut
+  useEffect(() => {
+    const checkAdminTrigger = () => {
+      const hash = window.location.hash.toLowerCase();
+      const params = new URLSearchParams(window.location.search);
+      if (
+        hash === '#admin' || 
+        hash === '#organisateur' || 
+        hash === '#ajcd' || 
+        params.has('admin') || 
+        params.has('manage')
+      ) {
+        unlockAndOpenAdmin();
+      }
+    };
+
+    checkAdminTrigger();
+    window.addEventListener('hashchange', checkAdminTrigger);
+
+    // Keyboard shortcut: Alt + A or Ctrl + Shift + A
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.altKey && e.key.toLowerCase() === 'a') || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a')) {
+        e.preventDefault();
+        unlockAndOpenAdmin();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('hashchange', checkAdminTrigger);
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
@@ -264,7 +321,8 @@ export default function App() {
       <Header
         onOpenBooking={() => handleOpenBooking()}
         onOpenScanner={() => setIsScannerOpen(true)}
-        onOpenAdmin={() => setIsAdminOpen(true)}
+        onOpenAdmin={unlockAndOpenAdmin}
+        showAdminButton={isAdminUnlocked}
         darkMode={darkMode}
         onToggleTheme={() => setDarkMode(!darkMode)}
       />
@@ -331,6 +389,7 @@ export default function App() {
       <Footer
         onOpenBooking={() => handleOpenBooking()}
         reservationPhone={eventData.reservation_phone}
+        onOpenAdmin={unlockAndOpenAdmin}
       />
 
       {/* Floating Mobile Sticky CTA */}
@@ -387,6 +446,7 @@ export default function App() {
             }}
             onOpenScanner={() => setIsScannerOpen(true)}
             onDataUpdated={fetchData}
+            onLockAccess={lockAdminAccess}
           />
         )}
       </Suspense>

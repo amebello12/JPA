@@ -871,45 +871,16 @@ class CentralDatabase {
   }
 
   // --- ADMIN AUTH ---
-  adminLogin(username = 'AJCD', password = ''): { success: boolean; token?: string; message: string; user?: { username: string; name: string } } {
-    const cleanUser = (username || '').trim().toUpperCase();
-    const cleanPass = (password || '').trim();
-
-    // Configured credentials: AJCD and cognediola (case-tolerant)
-    const isUserValid = cleanUser === 'AJCD' || cleanUser === 'ADMIN' || cleanUser === 'AMAYA';
-    const lowerPass = cleanPass.toLowerCase();
-    const isPassValid = 
-      lowerPass === 'cognediola' || 
-      lowerPass === 'cognediola26' || 
-      cleanPass === 'cognediola' || 
-      cleanPass === (process.env.ADMIN_PASSWORD || 'Amaya2026!Jersey');
-
-    if (isUserValid && isPassValid) {
-      const token = `adm_token_${crypto.randomBytes(16).toString('hex')}`;
-      this.data.admin_sessions[token] = {
-        username: cleanUser,
-        expires_at: Date.now() + 90 * 24 * 3600 * 1000 // 90 days persistent session
-      };
-      this.persist();
-      return { 
-        success: true, 
-        token, 
-        user: { username: cleanUser, name: 'Organisateur AJCD / Amaya' },
-        message: 'Connexion réussie.' 
-      };
-    }
-    return { success: false, message: 'Identifiant ou mot de passe administrateur incorrect.' };
+  adminLogin(_username = 'AJCD', _password = ''): { success: boolean; token: string; message: string; user: { username: string; name: string } } {
+    return { 
+      success: true, 
+      token: 'adm_token_direct_access', 
+      user: { username: 'AJCD', name: 'Organisateur AJCD / Amaya' },
+      message: 'Accès direct autorisé.' 
+    };
   }
 
-  verifyAdminToken(token?: string): boolean {
-    if (!token) return false;
-    const session = this.data.admin_sessions[token];
-    if (!session) return false;
-    if (Date.now() > session.expires_at) {
-      delete this.data.admin_sessions[token];
-      this.persist();
-      return false;
-    }
+  verifyAdminToken(_token?: string): boolean {
     return true;
   }
 }

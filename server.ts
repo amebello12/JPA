@@ -26,14 +26,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Admin authentication middleware
-const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization;
-  const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : (req.query.token as string);
-
-  if (!db.verifyAdminToken(token)) {
-    return res.status(401).json({ success: false, message: 'Accès non autorisé. Session invalide ou expirée.' });
-  }
+// Admin authentication middleware (direct open access as requested)
+const requireAdmin = (_req: Request, _res: Response, next: NextFunction) => {
   next();
 };
 
