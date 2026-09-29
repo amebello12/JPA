@@ -1,0 +1,11 @@
+{
+  "name": "JERSEY NIGHT CLUB PARTY REMIX 2026",
+  "description": "Plateforme premium de billetterie officielle pour le Jersey Night Club Party Remix 2026 à Amaya Beach.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
+

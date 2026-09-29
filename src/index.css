@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    color: #F8FAFC;
+    background-color: #08090D;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  img {
+    content-visibility: auto;
+  }
+}
+
+/* Custom Sporty & Neon Nightclub Accents */
+.neon-glow-purple {
+  box-shadow: 0 0 25px -5px rgba(124, 58, 237, 0.45);
+}
+
+.neon-glow-yellow {
+  box-shadow: 0 0 25px -5px rgba(250, 204, 21, 0.4);
+}
+
+.neon-border-purple {
+  border-color: rgba(124, 58, 237, 0.5);
+  box-shadow: inset 0 0 15px rgba(124, 58, 237, 0.15), 0 0 15px rgba(124, 58, 237, 0.25);
+}
+
+.bg-glass {
+  background: rgba(17, 24, 39, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.bg-glass-light {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+}
+
+/* Subtle stadium / pitch grid overlay */
+.pitch-pattern {
+  background-image: radial-gradient(rgba(124, 58, 237, 0.08) 1px, transparent 1px),
+                    radial-gradient(rgba(37, 99, 235, 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: 0 0, 16px 16px;
+}
+
+/* Light mode overrides */
+html.light body {
+  background-color: #F8FAFC;
+  color: #0F172A;
+}
+
+html.light .bg-glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+

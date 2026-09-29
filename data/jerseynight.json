@@ -1,0 +1,335 @@
+{
+  "events": [
+    {
+      "id": "event-jersey-2026",
+      "name": "JERSEY NIGHT CLUB PARTY REMIX",
+      "edition": "2026",
+      "date": "2026-10-03",
+      "time": "20:00",
+      "location": "Amaya Beach",
+      "venue_details": "Mboro Plage",
+      "description": "Une soirée unique et ultra-chic mêlant passion du football, streetwear, DJ sets explosifs et ambiance festive nightclub au bord de la plage.",
+      "dress_code": "Venez avec votre maillot préféré : club, équipe nationale ou maillot de football iconique.",
+      "status": "ACTIVE",
+      "capacity": 1000,
+      "organizers": [
+        "Amaya",
+        "AJCD Cogne Diola"
+      ],
+      "partners": [
+        "Amaya",
+        "Wa Cogne Diola",
+        "Ressortissants de Cogne Diola"
+      ],
+      "poster_url": "/src/assets/images/official_jersey_flyer_1790635512344.jpg",
+      "reservation_phone": "70717281",
+      "free_transport_info": [
+        "Arrêt car Diamaguene",
+        "Station Dabo",
+        "Mosquée HLM",
+        "Station marché (Lycée pour Cité Mariama)"
+      ],
+      "ladies_free_until": "1h du matin",
+      "slogan": "« Venez avec votre maillot… Repartez avec des souvenirs inoubliables. »"
+    }
+  ],
+  "ticket_types": [
+    {
+      "id": "tt-prevente",
+      "event_id": "event-jersey-2026",
+      "name": "Ticket Prévente",
+      "price": 1500,
+      "original_price": 2000,
+      "description": "Accès prioritaire à la soirée Jersey Night Club Party Remix 2026 + navette gratuite.",
+      "badge": "PROMO EXCLUSIVE",
+      "available_quantity": 400,
+      "sold_quantity": 142,
+      "max_per_order": 10,
+      "active": true
+    },
+    {
+      "id": "tt-standard",
+      "event_id": "event-jersey-2026",
+      "name": "Ticket Standard Jour J",
+      "price": 2000,
+      "description": "Entrée officielle le jour de l’événement à Amaya Beach + navette gratuite.",
+      "badge": "POPULAIRE",
+      "available_quantity": 600,
+      "sold_quantity": 118,
+      "max_per_order": 10,
+      "active": true
+    }
+  ],
+  "customers": [
+    {
+      "id": "cust-demo-1",
+      "full_name": "Mamadou Diop",
+      "phone": "77 654 32 10",
+      "email": "mamadou.diop@example.com",
+      "created_at": "2026-09-20T14:32:00Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": "ord-demo-1",
+      "order_number": "JP-2026-00482",
+      "customer_id": "cust-demo-1",
+      "customer": {
+        "id": "cust-demo-1",
+        "full_name": "Mamadou Diop",
+        "phone": "77 654 32 10",
+        "email": "mamadou.diop@example.com",
+        "created_at": "2026-09-20T14:32:00Z"
+      },
+      "event_id": "event-jersey-2026",
+      "ticket_type_id": "tt-standard",
+      "ticket_type_name": "Ticket Standard Jour J",
+      "quantity": 3,
+      "unit_price": 2000,
+      "subtotal": 6000,
+      "discount": 0,
+      "total_amount": 6000,
+      "payment_method": "wave",
+      "payment_status": "PAID",
+      "payment_reference": "WAVE-TX-99214",
+      "wave_payment_url": "https://pay.wave.com/m/M_sn_lHy4DaHe66Bv/c/sn/",
+      "created_at": "2026-09-20T14:32:00Z",
+      "paid_at": "2026-09-20T14:35:10Z",
+      "tickets": [
+        {
+          "id": "tkt-1",
+          "ticket_number": "JP-8F72A1",
+          "order_id": "ord-demo-1",
+          "order_number": "JP-2026-00482",
+          "event_id": "event-jersey-2026",
+          "event_name": "JERSEY NIGHT CLUB PARTY REMIX",
+          "customer_id": "cust-demo-1",
+          "customer_name": "Mamadou Diop",
+          "customer_phone": "77 654 32 10",
+          "qr_token": "JN-TOKEN-8F72A1-9042",
+          "ticket_type": "Ticket Standard Jour J",
+          "price": 2000,
+          "status": "USED",
+          "created_at": "2026-09-20T14:35:10Z",
+          "used_at": "2026-09-28T22:35:49.618Z",
+          "validated_by": "Porte Test"
+        },
+        {
+          "id": "tkt-2",
+          "ticket_number": "JP-4C91B7",
+          "order_id": "ord-demo-1",
+          "order_number": "JP-2026-00482",
+          "event_id": "event-jersey-2026",
+          "event_name": "JERSEY NIGHT CLUB PARTY REMIX",
+          "customer_id": "cust-demo-1",
+          "customer_name": "Mamadou Diop",
+          "customer_phone": "77 654 32 10",
+          "qr_token": "JN-TOKEN-4C91B7-1123",
+          "ticket_type": "Ticket Standard Jour J",
+          "price": 2000,
+          "status": "USED",
+          "used_at": "2026-09-21T21:15:00Z",
+          "validated_by": "Moussa Sène (Scanner 01)",
+          "created_at": "2026-09-20T14:35:10Z"
+        },
+        {
+          "id": "tkt-3",
+          "ticket_number": "JP-6D28E3",
+          "order_id": "ord-demo-1",
+          "order_number": "JP-2026-00482",
+          "event_id": "event-jersey-2026",
+          "event_name": "JERSEY NIGHT CLUB PARTY REMIX",
+          "customer_id": "cust-demo-1",
+          "customer_name": "Mamadou Diop",
+          "customer_phone": "77 654 32 10",
+          "qr_token": "JN-TOKEN-6D28E3-7741",
+          "ticket_type": "Ticket Standard Jour J",
+          "price": 2000,
+          "status": "VALID",
+          "created_at": "2026-09-20T14:35:10Z"
+        }
+      ]
+    }
+  ],
+  "tickets": [
+    {
+      "id": "tkt-1",
+      "ticket_number": "JP-8F72A1",
+      "order_id": "ord-demo-1",
+      "order_number": "JP-2026-00482",
+      "event_id": "event-jersey-2026",
+      "event_name": "JERSEY NIGHT CLUB PARTY REMIX",
+      "customer_id": "cust-demo-1",
+      "customer_name": "Mamadou Diop",
+      "customer_phone": "77 654 32 10",
+      "qr_token": "JN-TOKEN-8F72A1-9042",
+      "ticket_type": "Ticket Standard Jour J",
+      "price": 2000,
+      "status": "USED",
+      "created_at": "2026-09-20T14:35:10Z",
+      "used_at": "2026-09-28T22:35:49.618Z",
+      "validated_by": "Porte Test"
+    },
+    {
+      "id": "tkt-2",
+      "ticket_number": "JP-4C91B7",
+      "order_id": "ord-demo-1",
+      "order_number": "JP-2026-00482",
+      "event_id": "event-jersey-2026",
+      "event_name": "JERSEY NIGHT CLUB PARTY REMIX",
+      "customer_id": "cust-demo-1",
+      "customer_name": "Mamadou Diop",
+      "customer_phone": "77 654 32 10",
+      "qr_token": "JN-TOKEN-4C91B7-1123",
+      "ticket_type": "Ticket Standard Jour J",
+      "price": 2000,
+      "status": "USED",
+      "used_at": "2026-09-21T21:15:00Z",
+      "validated_by": "Moussa Sène (Scanner 01)",
+      "created_at": "2026-09-20T14:35:10Z"
+    },
+    {
+      "id": "tkt-3",
+      "ticket_number": "JP-6D28E3",
+      "order_id": "ord-demo-1",
+      "order_number": "JP-2026-00482",
+      "event_id": "event-jersey-2026",
+      "event_name": "JERSEY NIGHT CLUB PARTY REMIX",
+      "customer_id": "cust-demo-1",
+      "customer_name": "Mamadou Diop",
+      "customer_phone": "77 654 32 10",
+      "qr_token": "JN-TOKEN-6D28E3-7741",
+      "ticket_type": "Ticket Standard Jour J",
+      "price": 2000,
+      "status": "VALID",
+      "created_at": "2026-09-20T14:35:10Z"
+    }
+  ],
+  "promo_codes": [
+    {
+      "id": "promo-1",
+      "code": "JERSEY10",
+      "discount_type": "percent",
+      "discount_value": 10,
+      "expiration": "2026-10-04T23:59:59Z",
+      "usage_limit": 200,
+      "times_used": 18,
+      "active": true
+    },
+    {
+      "id": "promo-2",
+      "code": "COGNE500",
+      "discount_type": "fixed",
+      "discount_value": 500,
+      "min_order_amount": 3000,
+      "expiration": "2026-10-04T23:59:59Z",
+      "usage_limit": 150,
+      "times_used": 24,
+      "active": true
+    },
+    {
+      "id": "promo-3",
+      "code": "AMAYA2026",
+      "discount_type": "fixed",
+      "discount_value": 1000,
+      "min_order_amount": 4000,
+      "expiration": "2026-10-04T23:59:59Z",
+      "usage_limit": 50,
+      "times_used": 12,
+      "active": true
+    }
+  ],
+  "check_ins": [
+    {
+      "id": "chk-1790634949618-lmay",
+      "ticket_id": "tkt-1",
+      "ticket_number": "JP-8F72A1",
+      "qr_token": "JN-TOKEN-8F72A1-9042",
+      "customer_name": "Mamadou Diop",
+      "ticket_type": "Ticket Standard Jour J",
+      "scanned_at": "2026-09-28T22:35:49.618Z",
+      "operator": "Porte Test",
+      "method": "manual"
+    },
+    {
+      "id": "chk-1",
+      "ticket_id": "tkt-2",
+      "ticket_number": "JP-4C91B7",
+      "qr_token": "JN-TOKEN-4C91B7-1123",
+      "customer_name": "Mamadou Diop",
+      "ticket_type": "Ticket Standard Jour J",
+      "scanned_at": "2026-09-21T21:15:00Z",
+      "operator": "Moussa Sène (Scanner 01)",
+      "method": "camera"
+    }
+  ],
+  "programs": [
+    {
+      "id": "prog-1",
+      "event_id": "event-jersey-2026",
+      "time": "20:00",
+      "title": "Ouverture des portes",
+      "description": "Accueil des participants et mise en ambiance musicale chill lounge.",
+      "order_index": 1
+    },
+    {
+      "id": "prog-2",
+      "event_id": "event-jersey-2026",
+      "time": "21:00",
+      "title": "Warm-up DJ Set",
+      "description": "Montée en température avec les meilleurs hits Afrobeats, Amapiano & Rap.",
+      "order_index": 2
+    },
+    {
+      "id": "prog-3",
+      "event_id": "event-jersey-2026",
+      "time": "22:00",
+      "title": "Jersey Party & Défilé",
+      "description": "Célébration des plus beaux maillots de football et animations festives.",
+      "order_index": 3
+    },
+    {
+      "id": "prog-4",
+      "event_id": "event-jersey-2026",
+      "time": "00:00",
+      "title": "Night Club Remix",
+      "description": "Le grand show remix : clubbing, light show, effets néon sur la plage.",
+      "order_index": 4
+    },
+    {
+      "id": "prog-5",
+      "event_id": "event-jersey-2026",
+      "time": "02:00",
+      "title": "Final / Closing & Beach After",
+      "description": "Session closing mémorable jusqu’au petit matin.",
+      "order_index": 5
+    }
+  ],
+  "settings": {
+    "wave_link": "https://pay.wave.com/m/M_sn_lHy4DaHe66Bv/c/sn/",
+    "wave_merchant_id": "M_sn_lHy4DaHe66Bv",
+    "whatsapp_enabled": true,
+    "whatsapp_phone_number": "+22170717281",
+    "contact_phone": "70717281",
+    "contact_email": "contact@jerseynight.sn",
+    "currency": "FCFA"
+  },
+  "admin_sessions": {
+    "adm_token_013217ec9dd63f1840b8f4e1b501ac5a": {
+      "username": "AJCD",
+      "expires_at": 1791240999136
+    },
+    "adm_token_d0eb06ecf9ef873a05ff28f327442e3c": {
+      "username": "AJCD",
+      "expires_at": 1791241112376
+    },
+    "adm_token_3d15f9452e7e0681f1fdaeff449d0baa": {
+      "username": "AJCD",
+      "expires_at": 1791242108654
+    },
+    "adm_token_99c913522830d1f5a189acda64c0ba18": {
+      "username": "AJCD",
+      "expires_at": 1791243248870
+    }
+  }
+}
