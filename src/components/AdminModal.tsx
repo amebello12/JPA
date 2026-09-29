@@ -161,15 +161,15 @@ export const AdminModal: React.FC<AdminModalProps> = ({
 
     try {
       const res = await api.adminLogin(usernameInput.trim(), passwordInput.trim());
-      if (res.success && res.token) {
+      if (res && res.success && res.token) {
         setToken(res.token);
         sessionStorage.setItem('jn_admin_token', res.token);
         fetchAdminData(res.token);
       } else {
-        setAuthError(res.message || 'Identifiant ou mot de passe incorrect.');
+        setAuthError(res?.message || 'Identifiant ou mot de passe incorrect.');
       }
     } catch (err: any) {
-      setAuthError('Erreur de connexion au serveur.');
+      setAuthError(err?.message || 'Erreur de connexion au serveur.');
     } finally {
       setIsAuthenticating(false);
     }

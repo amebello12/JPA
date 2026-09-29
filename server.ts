@@ -12,6 +12,17 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
+// Universal CORS & Preflight handler
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  next();
+});
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
@@ -165,11 +176,8 @@ app.get('/api/checkin/history', (_req: Request, res: Response) => {
 // 9. Admin Login
 app.post('/api/admin/login', (req: Request, res: Response) => {
   try {
-    const { username, password } = req.body;
+    const { username, password } = req.body || {};
     const result = db.adminLogin(username, password);
-    if (!result.success) {
-      return res.status(401).json(result);
-    }
     res.json(result);
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message });

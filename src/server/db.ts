@@ -875,9 +875,14 @@ class CentralDatabase {
     const cleanUser = (username || '').trim().toUpperCase();
     const cleanPass = (password || '').trim();
 
-    // Configured credentials: AJCD and cognediola
+    // Configured credentials: AJCD and cognediola (case-tolerant)
     const isUserValid = cleanUser === 'AJCD' || cleanUser === 'ADMIN' || cleanUser === 'AMAYA';
-    const isPassValid = cleanPass === 'cognediola' || cleanPass === 'cognediola26' || cleanPass === (process.env.ADMIN_PASSWORD || 'Amaya2026!Jersey');
+    const lowerPass = cleanPass.toLowerCase();
+    const isPassValid = 
+      lowerPass === 'cognediola' || 
+      lowerPass === 'cognediola26' || 
+      cleanPass === 'cognediola' || 
+      cleanPass === (process.env.ADMIN_PASSWORD || 'Amaya2026!Jersey');
 
     if (isUserValid && isPassValid) {
       const token = `adm_token_${crypto.randomBytes(16).toString('hex')}`;

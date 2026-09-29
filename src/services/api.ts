@@ -103,12 +103,21 @@ export const api = {
 
   // Admin Auth
   async adminLogin(username: string, password: string): Promise<{ success: boolean; token?: string; message: string; user?: any }> {
-    const res = await fetch(`${API_BASE}/admin/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    });
-    return res.json();
+    try {
+      const res = await fetch(`${API_BASE}/admin/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      return data;
+    } catch (err: any) {
+      console.error('adminLogin network error:', err);
+      return {
+        success: false,
+        message: err.message || 'Impossible de contacter le serveur.'
+      };
+    }
   },
 
   // Secured Admin Endpoints
