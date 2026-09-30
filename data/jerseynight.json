@@ -43,7 +43,7 @@
       "description": "Accès prioritaire à la soirée Jersey Night Club Party Remix 2026 + navette gratuite.",
       "badge": "PROMO EXCLUSIVE",
       "available_quantity": 400,
-      "sold_quantity": 142,
+      "sold_quantity": 0,
       "max_per_order": 10,
       "active": true
     },
@@ -55,20 +55,12 @@
       "description": "Entrée officielle le jour de l’événement à Amaya Beach + navette gratuite.",
       "badge": "POPULAIRE",
       "available_quantity": 600,
-      "sold_quantity": 118,
+      "sold_quantity": 0,
       "max_per_order": 10,
       "active": true
     }
   ],
-  "customers": [
-    {
-      "id": "cust-demo-1",
-      "full_name": "Mamadou Diop",
-      "phone": "77 654 32 10",
-      "email": "mamadou.diop@example.com",
-      "created_at": "2026-09-20T14:32:00Z"
-    }
-  ],
+  "customers": [],
   "orders": [
     {
       "id": "ord-demo-1",
@@ -149,62 +141,33 @@
           "created_at": "2026-09-20T14:35:10Z"
         }
       ]
-    }
-  ],
-  "tickets": [
-    {
-      "id": "tkt-1",
-      "ticket_number": "JP-8F72A1",
-      "order_id": "ord-demo-1",
-      "order_number": "JP-2026-00482",
-      "event_id": "event-jersey-2026",
-      "event_name": "JERSEY NIGHT CLUB PARTY REMIX",
-      "customer_id": "cust-demo-1",
-      "customer_name": "Mamadou Diop",
-      "customer_phone": "77 654 32 10",
-      "qr_token": "JN-TOKEN-8F72A1-9042",
-      "ticket_type": "Ticket Standard Jour J",
-      "price": 2000,
-      "status": "USED",
-      "created_at": "2026-09-20T14:35:10Z",
-      "used_at": "2026-09-28T22:35:49.618Z",
-      "validated_by": "Porte Test"
     },
     {
-      "id": "tkt-2",
-      "ticket_number": "JP-4C91B7",
-      "order_id": "ord-demo-1",
-      "order_number": "JP-2026-00482",
+      "id": "ord-1790723079422-0ra23",
+      "order_number": "JP-2026-72046",
+      "customer_id": "cust-1790723079422-592",
+      "customer": {
+        "id": "cust-1790723079422-592",
+        "full_name": "Ame Bello",
+        "phone": "707717281",
+        "email": "diassy38@gmail.com",
+        "created_at": "2026-09-29T23:04:39.422Z"
+      },
       "event_id": "event-jersey-2026",
-      "event_name": "JERSEY NIGHT CLUB PARTY REMIX",
-      "customer_id": "cust-demo-1",
-      "customer_name": "Mamadou Diop",
-      "customer_phone": "77 654 32 10",
-      "qr_token": "JN-TOKEN-4C91B7-1123",
-      "ticket_type": "Ticket Standard Jour J",
-      "price": 2000,
-      "status": "USED",
-      "used_at": "2026-09-21T21:15:00Z",
-      "validated_by": "Moussa Sène (Scanner 01)",
-      "created_at": "2026-09-20T14:35:10Z"
-    },
-    {
-      "id": "tkt-3",
-      "ticket_number": "JP-6D28E3",
-      "order_id": "ord-demo-1",
-      "order_number": "JP-2026-00482",
-      "event_id": "event-jersey-2026",
-      "event_name": "JERSEY NIGHT CLUB PARTY REMIX",
-      "customer_id": "cust-demo-1",
-      "customer_name": "Mamadou Diop",
-      "customer_phone": "77 654 32 10",
-      "qr_token": "JN-TOKEN-6D28E3-7741",
-      "ticket_type": "Ticket Standard Jour J",
-      "price": 2000,
-      "status": "VALID",
-      "created_at": "2026-09-20T14:35:10Z"
+      "ticket_type_id": "tt-standard",
+      "ticket_type_name": "Ticket Standard Jour J",
+      "quantity": 1,
+      "unit_price": 2000,
+      "subtotal": 2000,
+      "discount": 0,
+      "total_amount": 2000,
+      "payment_method": "wave",
+      "payment_status": "PENDING",
+      "wave_payment_url": "https://pay.wave.com/m/M_sn_lHy4DaHe66Bv/c/sn/",
+      "created_at": "2026-09-29T23:04:39.422Z"
     }
   ],
+  "tickets": [],
   "promo_codes": [
     {
       "id": "promo-1",
@@ -239,30 +202,7 @@
       "active": true
     }
   ],
-  "check_ins": [
-    {
-      "id": "chk-1790634949618-lmay",
-      "ticket_id": "tkt-1",
-      "ticket_number": "JP-8F72A1",
-      "qr_token": "JN-TOKEN-8F72A1-9042",
-      "customer_name": "Mamadou Diop",
-      "ticket_type": "Ticket Standard Jour J",
-      "scanned_at": "2026-09-28T22:35:49.618Z",
-      "operator": "Porte Test",
-      "method": "manual"
-    },
-    {
-      "id": "chk-1",
-      "ticket_id": "tkt-2",
-      "ticket_number": "JP-4C91B7",
-      "qr_token": "JN-TOKEN-4C91B7-1123",
-      "customer_name": "Mamadou Diop",
-      "ticket_type": "Ticket Standard Jour J",
-      "scanned_at": "2026-09-21T21:15:00Z",
-      "operator": "Moussa Sène (Scanner 01)",
-      "method": "camera"
-    }
-  ],
+  "check_ins": [],
   "programs": [
     {
       "id": "prog-1",
@@ -362,6 +302,10 @@
     "adm_token_e04abda5372ae7d026178982d8e4fef5": {
       "username": "AJCD",
       "expires_at": 1798492832359
+    },
+    "adm_token_dca32f6b81540453602e5d4d93228f97": {
+      "username": "AJCD",
+      "expires_at": 1798492950055
     }
   }
 }

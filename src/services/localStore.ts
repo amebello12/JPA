@@ -667,6 +667,55 @@ class ClientStore {
     this.save();
     return { success: true, settings: this.data.settings, message: 'Paramètres mis à jour.' };
   }
+
+  resetSalesData(options?: {
+    resetOrders?: boolean;
+    resetTickets?: boolean;
+    resetParticipants?: boolean;
+    resetCheckIns?: boolean;
+  }) {
+    const deletedOrders = this.data.orders.length;
+    const deletedTickets = this.data.tickets.length;
+    const deletedCustomers = this.data.customers.length;
+    const deletedCheckIns = this.data.check_ins.length;
+
+    const doOrders = options?.resetOrders ?? true;
+    const doTickets = options?.resetTickets ?? true;
+    const doParticipants = options?.resetParticipants ?? true;
+    const doCheckIns = options?.resetCheckIns ?? true;
+
+    if (doOrders) {
+      this.data.orders = [];
+    }
+    if (doTickets) {
+      this.data.tickets = [];
+      this.data.ticket_types.forEach(tt => {
+        tt.sold_quantity = 0;
+      });
+    }
+    if (doParticipants) {
+      this.data.customers = [];
+    }
+    if (doCheckIns) {
+      this.data.check_ins = [];
+    }
+    if (doOrders) {
+      this.data.promo_codes.forEach(p => {
+        p.times_used = 0;
+      });
+    }
+
+    this.save();
+
+    return {
+      success: true,
+      message: 'Commandes, billets et participants réinitialisés avec succès.',
+      deletedOrders,
+      deletedTickets,
+      deletedCustomers,
+      deletedCheckIns
+    };
+  }
 }
 
 export const localStore = new ClientStore();

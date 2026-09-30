@@ -365,6 +365,16 @@ app.get('/api/export/:type', requireAdmin, (req: Request, res: Response) => {
   }
 });
 
+// 22. Reset sales data (Orders, Tickets, Participants, Scans)
+app.post('/api/admin/reset-data', requireAdmin, (req: Request, res: Response) => {
+  try {
+    const result = db.resetSalesData(req.body);
+    res.json(result);
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // -------------------------------------------------------------
 // VITE MIDDLEWARE OR STATIC SERVING
 // -------------------------------------------------------------

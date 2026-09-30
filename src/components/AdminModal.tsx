@@ -117,6 +117,36 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     copied: false
   });
 
+  // Reset confirmation modal state
+  const [showResetModal, setShowResetModal] = useState<boolean>(false);
+  const [resetOptions, setResetOptions] = useState({
+    resetOrders: true,
+    resetTickets: true,
+    resetParticipants: true,
+    resetCheckIns: true
+  });
+  const [isResetting, setIsResetting] = useState<boolean>(false);
+
+  const handleExecuteReset = async () => {
+    setIsResetting(true);
+    try {
+      const res = await api.resetSalesData(token, resetOptions);
+      if (res.success) {
+        setSaveSuccessMsg('Réinitialisation réussie ! Les données ont été remises à zéro.');
+        setTimeout(() => setSaveSuccessMsg(''), 6000);
+        setShowResetModal(false);
+        await fetchAdminData();
+        if (onDataUpdated) onDataUpdated();
+      } else {
+        alert(res.message || 'Erreur lors de la réinitialisation.');
+      }
+    } catch (err: any) {
+      alert(err.message || 'Erreur lors de la réinitialisation.');
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   const fetchAdminData = async (_authToken?: string) => {
     setLoading(true);
     try {
@@ -633,6 +663,17 @@ _L'équipe AJCD Cogne Diola & Amaya_`;
                 >
                   <Tag className="w-4 h-4" />
                   <span>Codes Promo</span>
+                </button>
+
+                {/* 9. Réinitialiser les données */}
+                <button
+                  type="button"
+                  onClick={() => setShowResetModal(true)}
+                  className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl transition-all text-rose-400 hover:text-white hover:bg-rose-500/20 border border-rose-500/20 mt-2"
+                  title="Remettre à zéro les commandes, billets et participants"
+                >
+                  <Trash2 className="w-4 h-4 text-rose-400" />
+                  <span>Réinitialisation</span>
                 </button>
               </nav>
 
@@ -1344,7 +1385,7 @@ _L'équipe AJCD Cogne Diola & Amaya_`;
                       <div className="text-sm font-bold text-white">Exportation des Données Centralisées</div>
                       <div className="text-xs text-slate-400">Téléchargez les listings complets au format CSV/Excel.</div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       <button
                         onClick={() => handleExportCSV('orders')}
                         className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold flex items-center gap-1.5"
@@ -1359,6 +1400,23 @@ _L'équipe AJCD Cogne Diola & Amaya_`;
                         <Download className="w-3.5 h-3.5" />
                         <span>Billets (CSV)</span>
                       </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setResetOptions({
+                            resetOrders: true,
+                            resetTickets: true,
+                            resetParticipants: true,
+                            resetCheckIns: true
+                          });
+                          setShowResetModal(true);
+                        }}
+                        className="px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 text-xs font-bold flex items-center gap-1.5 transition-colors"
+                        title="Remise à zéro complète des ventes"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+                        <span>Remise à Zéro</span>
+                      </button>
                     </div>
                   </div>
 
@@ -1372,13 +1430,32 @@ _L'équipe AJCD Cogne Diola & Amaya_`;
                     <h4 className="text-base font-bold text-white uppercase tracking-wider">
                       Gestion des Commandes ({orders.length})
                     </h4>
-                    <button
-                      onClick={() => fetchAdminData(token)}
-                      className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-xs flex items-center gap-1"
-                    >
-                      <RefreshCw className="w-3.5 h-3.5" />
-                      Actualiser
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setResetOptions({
+                            resetOrders: true,
+                            resetTickets: true,
+                            resetParticipants: false,
+                            resetCheckIns: true
+                          });
+                          setShowResetModal(true);
+                        }}
+                        className="p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/20 text-xs flex items-center gap-1.5 transition-colors"
+                        title="Vider et réinitialiser les commandes et billets"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+                        <span>Vider Commandes</span>
+                      </button>
+                      <button
+                        onClick={() => fetchAdminData(token)}
+                        className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-xs flex items-center gap-1"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" />
+                        Actualiser
+                      </button>
+                    </div>
                   </div>
 
                   <div className="overflow-x-auto rounded-2xl border border-white/10 bg-black/40">
@@ -1460,13 +1537,32 @@ _L'équipe AJCD Cogne Diola & Amaya_`;
                     <h4 className="text-base font-bold text-white uppercase tracking-wider">
                       Tous les Billets Émis ({tickets.length})
                     </h4>
-                    <button
-                      onClick={() => handleExportCSV('tickets')}
-                      className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold flex items-center gap-1"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      Exporter CSV
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setResetOptions({
+                            resetOrders: false,
+                            resetTickets: true,
+                            resetParticipants: false,
+                            resetCheckIns: true
+                          });
+                          setShowResetModal(true);
+                        }}
+                        className="px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/20 text-xs flex items-center gap-1.5 transition-colors"
+                        title="Vider et réinitialiser tous les billets émis"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+                        <span>Vider Billets</span>
+                      </button>
+                      <button
+                        onClick={() => handleExportCSV('tickets')}
+                        className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold flex items-center gap-1"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        Exporter CSV
+                      </button>
+                    </div>
                   </div>
 
                   <div className="overflow-x-auto rounded-2xl border border-white/10 bg-black/40">
@@ -1541,15 +1637,34 @@ _L'équipe AJCD Cogne Diola & Amaya_`;
                     <h4 className="text-base font-bold text-white uppercase tracking-wider">
                       Participants Inscrits ({participants.length})
                     </h4>
-                    <div className="relative">
-                      <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                      <input
-                        type="text"
-                        placeholder="Rechercher nom, téléphone..."
-                        value={participantSearch}
-                        onChange={e => setParticipantSearch(e.target.value)}
-                        className="pl-9 pr-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs outline-none focus:border-purple-500 w-64"
-                      />
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setResetOptions({
+                            resetOrders: true,
+                            resetTickets: true,
+                            resetParticipants: true,
+                            resetCheckIns: true
+                          });
+                          setShowResetModal(true);
+                        }}
+                        className="px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/20 text-xs font-bold flex items-center gap-1.5 transition-colors"
+                        title="Vider et réinitialiser la liste des participants"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+                        <span>Vider Participants</span>
+                      </button>
+                      <div className="relative">
+                        <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                        <input
+                          type="text"
+                          placeholder="Rechercher nom, téléphone..."
+                          value={participantSearch}
+                          onChange={e => setParticipantSearch(e.target.value)}
+                          className="pl-9 pr-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs outline-none focus:border-purple-500 w-56 sm:w-64"
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -1808,6 +1923,152 @@ _L'équipe AJCD Cogne Diola & Amaya_`;
                     <span>Ouvrir WhatsApp & Envoyer</span>
                   </button>
                 </div>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* DATA RESET CONFIRMATION MODAL */}
+        {showResetModal && (
+          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
+            <div className="relative w-full max-w-lg bg-[#0e1322] border border-rose-500/40 rounded-3xl p-6 sm:p-7 shadow-2xl shadow-rose-950/50 space-y-5 text-white animate-scaleUp">
+              
+              <div className="flex items-start justify-between border-b border-white/10 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 rounded-2xl bg-rose-500/20 text-rose-400 border border-rose-500/40">
+                    <Trash2 className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h4 className="font-black text-lg font-display uppercase tracking-tight text-white flex items-center gap-2">
+                      <span>Réinitialiser les Données</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 font-bold border border-rose-500/30">Action Irréversible</span>
+                    </h4>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      Remettez à zéro les ventes de test avant le lancement officiel.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowResetModal(false)}
+                  className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Informational banner */}
+              <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-200 text-xs space-y-1.5">
+                <div className="font-bold flex items-center gap-1.5 text-rose-300">
+                  <AlertCircle className="w-4 h-4 text-rose-400 flex-shrink-0" />
+                  <span>Que va-t-il se passer ?</span>
+                </div>
+                <p className="text-[11px] leading-relaxed text-slate-300">
+                  Les éléments cochés ci-dessous seront définitivement purgés. Votre configuration d'événement (titre, dates, lieu, photos/affiches, tarifs configurés, programme et navettes) restera <strong className="text-white">strictement préservée</strong>.
+                </p>
+              </div>
+
+              {/* Checkboxes for modular reset */}
+              <div className="space-y-2.5 text-xs">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                  Sélectionnez les données à réinitialiser :
+                </div>
+
+                <label className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={resetOptions.resetOrders}
+                      onChange={e => setResetOptions(prev => ({ ...prev, resetOrders: e.target.checked }))}
+                      className="w-4 h-4 rounded text-rose-600 focus:ring-rose-500 border-white/20 bg-black/40 accent-rose-500"
+                    />
+                    <div>
+                      <div className="font-bold text-white">Toutes les Commandes ({orders.length})</div>
+                      <div className="text-[11px] text-slate-400">Paiements Wave, historiques et statuts</div>
+                    </div>
+                  </div>
+                  <ShoppingBag className="w-4 h-4 text-slate-400" />
+                </label>
+
+                <label className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={resetOptions.resetTickets}
+                      onChange={e => setResetOptions(prev => ({ ...prev, resetTickets: e.target.checked }))}
+                      className="w-4 h-4 rounded text-rose-600 focus:ring-rose-500 border-white/20 bg-black/40 accent-rose-500"
+                    />
+                    <div>
+                      <div className="font-bold text-white">Tous les Billets Émis ({tickets.length})</div>
+                      <div className="text-[11px] text-slate-400">QR codes, numéros JP et compteurs de ventes remis à 0</div>
+                    </div>
+                  </div>
+                  <Ticket className="w-4 h-4 text-slate-400" />
+                </label>
+
+                <label className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={resetOptions.resetParticipants}
+                      onChange={e => setResetOptions(prev => ({ ...prev, resetParticipants: e.target.checked }))}
+                      className="w-4 h-4 rounded text-rose-600 focus:ring-rose-500 border-white/20 bg-black/40 accent-rose-500"
+                    />
+                    <div>
+                      <div className="font-bold text-white">Liste des Participants Inscrits ({participants.length})</div>
+                      <div className="text-[11px] text-slate-400">Noms, numéros de téléphone et emails</div>
+                    </div>
+                  </div>
+                  <Users className="w-4 h-4 text-slate-400" />
+                </label>
+
+                <label className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={resetOptions.resetCheckIns}
+                      onChange={e => setResetOptions(prev => ({ ...prev, resetCheckIns: e.target.checked }))}
+                      className="w-4 h-4 rounded text-rose-600 focus:ring-rose-500 border-white/20 bg-black/40 accent-rose-500"
+                    />
+                    <div>
+                      <div className="font-bold text-white">Historique des Scans & Contrôles</div>
+                      <div className="text-[11px] text-slate-400">Remise à 0 du taux de présence à l'entrée</div>
+                    </div>
+                  </div>
+                  <Search className="w-4 h-4 text-slate-400" />
+                </label>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+                <button
+                  type="button"
+                  disabled={isResetting}
+                  onClick={() => setShowResetModal(false)}
+                  className="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-semibold text-xs transition-colors"
+                >
+                  Annuler
+                </button>
+
+                <button
+                  type="button"
+                  disabled={isResetting || (!resetOptions.resetOrders && !resetOptions.resetTickets && !resetOptions.resetParticipants && !resetOptions.resetCheckIns)}
+                  onClick={handleExecuteReset}
+                  className="px-6 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-rose-600/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isResetting ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      <span>Réinitialisation en cours...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="w-4 h-4" />
+                      <span>Confirmer la Réinitialisation</span>
+                    </>
+                  )}
+                </button>
               </div>
 
             </div>

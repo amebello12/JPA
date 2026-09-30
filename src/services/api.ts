@@ -342,5 +342,26 @@ export const api = {
       },
       () => localStore.updateAdminSettings(settings)
     );
+  },
+
+  // 19. Reset Sales Data (Orders, Tickets, Participants, Scans)
+  async resetSalesData(token: string, options?: {
+    resetOrders?: boolean;
+    resetTickets?: boolean;
+    resetParticipants?: boolean;
+    resetCheckIns?: boolean;
+  }) {
+    return callApi(
+      `${API_BASE}/admin/reset-data`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(options || {})
+      },
+      () => localStore.resetSalesData(options)
+    );
   }
 };

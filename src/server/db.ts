@@ -870,6 +870,66 @@ class CentralDatabase {
     return this.data.settings;
   }
 
+  // --- DATA RESET (ORDERS, TICKETS, PARTICIPANTS) ---
+  resetSalesData(options?: {
+    resetOrders?: boolean;
+    resetTickets?: boolean;
+    resetParticipants?: boolean;
+    resetCheckIns?: boolean;
+  }): {
+    success: boolean;
+    message: string;
+    deletedOrders: number;
+    deletedTickets: number;
+    deletedCustomers: number;
+    deletedCheckIns: number;
+  } {
+    const deletedOrders = this.data.orders.length;
+    const deletedTickets = this.data.tickets.length;
+    const deletedCustomers = this.data.customers.length;
+    const deletedCheckIns = this.data.check_ins.length;
+
+    const doOrders = options?.resetOrders ?? true;
+    const doTickets = options?.resetTickets ?? true;
+    const doParticipants = options?.resetParticipants ?? true;
+    const doCheckIns = options?.resetCheckIns ?? true;
+
+    if (doOrders) {
+      this.data.orders = [];
+    }
+    if (doTickets) {
+      this.data.tickets = [];
+      // Reset ticket type sold counters
+      this.data.ticket_types.forEach(tt => {
+        tt.sold_quantity = 0;
+      });
+    }
+    if (doParticipants) {
+      this.data.customers = [];
+    }
+    if (doCheckIns) {
+      this.data.check_ins = [];
+    }
+
+    // Reset promo usage if orders are reset
+    if (doOrders) {
+      this.data.promo_codes.forEach(p => {
+        p.times_used = 0;
+      });
+    }
+
+    this.persist();
+
+    return {
+      success: true,
+      message: 'Réinitialisation effectuée avec succès.',
+      deletedOrders,
+      deletedTickets,
+      deletedCustomers,
+      deletedCheckIns
+    };
+  }
+
   // --- ADMIN AUTH ---
   adminLogin(_username = 'AJCD', _password = ''): { success: boolean; token: string; message: string; user: { username: string; name: string } } {
     return { 
