@@ -684,11 +684,31 @@ class CentralDatabase {
   }
 
   getTicketByTokenOrNumber(identifier: string): Ticket | null {
-    const trimmed = identifier.trim().toUpperCase();
+    const raw = identifier.trim();
+    if (!raw) return null;
+
+    // Check if JSON QR code was scanned
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed.t) {
+        const found = this.data.tickets.find(t => t.ticket_number.toUpperCase() === String(parsed.t).trim().toUpperCase());
+        if (found) return found;
+      }
+      if (parsed.qr_token) {
+        const found = this.data.tickets.find(t => t.qr_token.toUpperCase() === String(parsed.qr_token).trim().toUpperCase());
+        if (found) return found;
+      }
+    } catch {
+      // Not JSON, continue with string search
+    }
+
+    const trimmed = raw.toUpperCase();
     return this.data.tickets.find(
       t => t.qr_token.toUpperCase() === trimmed ||
            t.ticket_number.toUpperCase() === trimmed ||
-           t.qr_token.includes(trimmed)
+           t.qr_token.includes(trimmed) ||
+           t.id === raw ||
+           t.customer_phone.replace(/\s+/g, '') === raw.replace(/\s+/g, '')
     ) || null;
   }
 
