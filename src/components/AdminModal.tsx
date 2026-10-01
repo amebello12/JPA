@@ -127,6 +127,23 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   });
   const [isResetting, setIsResetting] = useState<boolean>(false);
 
+  // Cross-device and cross-tab broadcast notification
+  const notifyAllViews = (updatedEvent?: any) => {
+    try {
+      if (onDataUpdated) onDataUpdated();
+      if (updatedEvent) {
+        window.dispatchEvent(new CustomEvent('jn_event_updated', { detail: updatedEvent }));
+      } else {
+        window.dispatchEvent(new CustomEvent('jn_event_updated'));
+      }
+      if (typeof BroadcastChannel !== 'undefined') {
+        const channel = new BroadcastChannel('jerseynight_sync_channel');
+        channel.postMessage({ type: 'UPDATE', timestamp: Date.now() });
+        channel.close();
+      }
+    } catch {}
+  };
+
   const handleExecuteReset = async () => {
     setIsResetting(true);
     try {
@@ -136,7 +153,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
         setTimeout(() => setSaveSuccessMsg(''), 6000);
         setShowResetModal(false);
         await fetchAdminData();
-        if (onDataUpdated) onDataUpdated();
+        notifyAllViews();
       } else {
         alert(res.message || 'Erreur lors de la réinitialisation.');
       }
@@ -196,11 +213,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({
       const res = await api.updateAdminEvent(token, currentEvent.id, currentEvent);
       if (res && res.success && res.event) {
         setCurrentEvent(res.event);
-        showNotification('✅ Modifications appliquées et synchronisées en direct sur le site !');
-        // Notify parent immediately
-        if (onDataUpdated) onDataUpdated();
-        // Global event dispatch to ensure all components and views update
-        window.dispatchEvent(new CustomEvent('jn_event_updated', { detail: res.event }));
+        showNotification('✅ Modifications appliquées et synchronisées en direct sur tous les téléphones et appareils !');
+        notifyAllViews(res.event);
         fetchAdminData(token);
       } else {
         alert(res?.message || 'Erreur lors de la sauvegarde du contenu.');
@@ -222,9 +236,9 @@ export const AdminModal: React.FC<AdminModalProps> = ({
         setCurrentEvent(updated);
         if (token) {
           try {
-            await api.updateAdminEvent(token, currentEvent.id, { [field]: base64 });
-            showNotification(`✅ Visuel (${field}) mis à jour immédiatement !`);
-            if (onDataUpdated) onDataUpdated();
+            const res = await api.updateAdminEvent(token, currentEvent.id, { [field]: base64 });
+            showNotification(`✅ Visuel (${field}) mis à jour et synchronisé partout !`);
+            notifyAllViews(res?.event || updated);
           } catch (err) {
             console.error(err);
           }
@@ -253,9 +267,9 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     if (!token) return;
     try {
       await api.updateAdminTicketType(token, type.id, type);
-      showNotification(`✅ Billet "${type.name}" mis à jour !`);
+      showNotification(`✅ Billet "${type.name}" mis à jour et synchronisé sur le site !`);
       fetchAdminData(token);
-      if (onDataUpdated) onDataUpdated();
+      notifyAllViews();
     } catch (err) {
       alert('Erreur de mise à jour du billet.');
     }
@@ -266,9 +280,9 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     if (!token) return;
     try {
       await api.updateAdminProgramItem(token, item.id, item);
-      showNotification(`✅ Étape "${item.title}" mise à jour !`);
+      showNotification(`✅ Étape "${item.title}" mise à jour et synchronisée !`);
       fetchAdminData(token);
-      if (onDataUpdated) onDataUpdated();
+      notifyAllViews();
     } catch (err) {
       alert('Erreur de mise à jour du programme.');
     }
@@ -286,7 +300,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
       setNewProgramItem({ time: '23:00', title: '', description: '', order_index: programs.length + 1 });
       showNotification('✅ Nouvelle étape ajoutée au programme !');
       fetchAdminData(token);
-      if (onDataUpdated) onDataUpdated();
+      notifyAllViews();
     } catch (err) {
       alert('Erreur lors de la création de l’étape.');
     }
@@ -298,7 +312,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
       await api.deleteAdminProgramItem(token, id);
       showNotification('Étape supprimée du programme.');
       fetchAdminData(token);
-      if (onDataUpdated) onDataUpdated();
+      notifyAllViews();
     } catch (err) {
       alert('Erreur lors de la suppression.');
     }
@@ -312,7 +326,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
       if (res.success) {
         showNotification(`✅ Commande ${orderNumber} validée et billets générés !`);
         fetchAdminData(token);
-        if (onDataUpdated) onDataUpdated();
+        notifyAllViews();
       }
     } catch (err) {
       alert('Erreur lors de la validation.');
@@ -330,7 +344,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
       if (res.success) {
         showNotification(`✅ Participant "${name}" supprimé avec succès.`);
         fetchAdminData(token);
-        if (onDataUpdated) onDataUpdated();
+        notifyAllViews();
       } else {
         alert(res.message || 'Erreur lors de la suppression.');
       }

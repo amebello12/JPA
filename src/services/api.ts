@@ -12,13 +12,25 @@ import {
 } from '../types/index.js';
 import { localStore } from './localStore.js';
 
-const API_BASE = '/api';
+// Central production backend URL for cross-device & multi-platform synchronization
+const CLOUD_BACKEND_URL = 'https://ais-pre-ghs6ur2pgfvcycz73hsozi-574452204334.europe-west2.run.app';
+
+export const getApiBase = (): string => {
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    // When accessed via external static hosting (e.g., Netlify, Vercel, GitHub Pages)
+    if (host.includes('netlify.app') || host.includes('github.io') || host.includes('vercel.app')) {
+      return `${CLOUD_BACKEND_URL}/api`;
+    }
+  }
+  return '/api';
+};
 
 /**
- * Robust fetch helper that checks for valid JSON responses.
- * When deployed on Netlify without a Node backend or in offline environments,
- * non-existent API routes will return HTML (the fallback index.html), which breaks res.json().
- * This helper detects that and falls back immediately to the persistent client store.
+ * Universal cross-device fetch helper.
+ * - Forces cache-busting so smartphones (iPhone, Android) and PCs always see real-time updates.
+ * - Automatically routes to the central cloud backend when hosted on static hosts.
+ * - Falls back to persistent local store if offline.
  */
 async function callApi<T>(
   url: string,
@@ -26,17 +38,37 @@ async function callApi<T>(
   fallback: () => T | Promise<T>
 ): Promise<T> {
   try {
-    const res = await fetch(url, options);
+    const base = getApiBase();
+    const finalUrl = url.startsWith('/api') ? url.replace('/api', base) : url;
+
+    // Cache-busting timestamp on GET requests to guarantee zero stale cache
+    const isGet = !options?.method || options.method.toUpperCase() === 'GET';
+    const separator = finalUrl.includes('?') ? '&' : '?';
+    const fetchUrl = isGet ? `${finalUrl}${separator}_t=${Date.now()}` : finalUrl;
+
+    const fetchOptions: RequestInit = {
+      cache: 'no-store',
+      ...options,
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        ...(options?.headers || {})
+      }
+    };
+
+    const res = await fetch(fetchUrl, fetchOptions);
     const contentType = res.headers.get('content-type') || '';
     if (res.ok && contentType.includes('application/json')) {
       const data = await res.json();
       return data;
     }
   } catch (err) {
-    // Network failure, offline or pure static hosting (e.g., Netlify)
+    // Network failure, offline or pure static hosting without internet
   }
   return await fallback();
 }
+
+const API_BASE = '/api';
 
 export const api = {
   // 1. Event Data

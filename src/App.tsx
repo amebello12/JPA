@@ -181,14 +181,37 @@ export default function App() {
   const [searchOrderNumber, setSearchOrderNumber] = useState<string>('');
   const [isSearchingOrder, setIsSearchingOrder] = useState<boolean>(false);
 
-  // Fetch Event Data on Mount
+  // Fetch Event Data from Central Database (Cross-device synchronized)
   const fetchData = async () => {
     try {
       const data = await api.getEventData();
-      if (data.success && data.event) {
-        setEventData(data.event);
-        if (data.ticketTypes) setTicketTypes(data.ticketTypes);
-        if (data.programs) setPrograms(data.programs);
+      if (data && data.success && data.event) {
+        setEventData(prev => {
+          // Only update if changed to avoid unnecessary re-renders
+          if (JSON.stringify(prev) !== JSON.stringify(data.event)) {
+            return data.event;
+          }
+          return prev;
+        });
+
+        if (data.ticketTypes) {
+          setTicketTypes(prev => {
+            if (JSON.stringify(prev) !== JSON.stringify(data.ticketTypes)) {
+              return data.ticketTypes;
+            }
+            return prev;
+          });
+        }
+
+        if (data.programs) {
+          setPrograms(prev => {
+            if (JSON.stringify(prev) !== JSON.stringify(data.programs)) {
+              return data.programs;
+            }
+            return prev;
+          });
+        }
+
         try {
           localStorage.setItem('cached_jn_event', JSON.stringify(data.event));
           if (data.ticketTypes) localStorage.setItem('cached_jn_tickets', JSON.stringify(data.ticketTypes));
@@ -201,22 +224,54 @@ export default function App() {
   };
 
   useEffect(() => {
+    // Initial fetch
     fetchData();
 
-    // Listen to real-time updates from admin
+    // Listen to local admin update events
     const handleEventUpdated = (e: any) => {
-      if (e.detail) {
+      if (e?.detail) {
         setEventData(e.detail);
       }
       fetchData();
     };
 
+    // Cross-tab broadcast channel
+    let channel: BroadcastChannel | null = null;
+    try {
+      if (typeof BroadcastChannel !== 'undefined') {
+        channel = new BroadcastChannel('jerseynight_sync_channel');
+        channel.onmessage = () => {
+          fetchData();
+        };
+      }
+    } catch {}
+
+    // Live continuous sync across different phones and devices (every 5 seconds)
+    const liveSyncInterval = setInterval(() => {
+      fetchData();
+    }, 5000);
+
+    // Refresh immediately when returning to tab or unlocking phone
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchData();
+      }
+    };
+
     window.addEventListener('jn_event_updated', handleEventUpdated);
     window.addEventListener('focus', fetchData);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
+      clearInterval(liveSyncInterval);
       window.removeEventListener('jn_event_updated', handleEventUpdated);
       window.removeEventListener('focus', fetchData);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (channel) {
+        try {
+          channel.close();
+        } catch {}
+      }
     };
   }, []);
 

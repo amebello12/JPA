@@ -321,10 +321,24 @@ class CentralDatabase {
           const ext = rawExt === 'jpeg' ? 'jpg' : rawExt;
           const base64Data = match[2];
           const fileName = `${prefix}_${Date.now()}.${ext}`;
-          const targetDir = path.resolve(process.cwd(), 'src/assets/images');
-          ensureDirectoryExists(targetDir);
-          fs.writeFileSync(path.join(targetDir, fileName), Buffer.from(base64Data, 'base64'));
-          return `/src/assets/images/${fileName}`;
+          const buffer = Buffer.from(base64Data, 'base64');
+
+          // Save to multiple locations to ensure immediate availability across all environments
+          const locations = [
+            path.resolve(process.cwd(), 'uploads'),
+            path.resolve(process.cwd(), 'public/uploads'),
+            path.resolve(process.cwd(), 'dist/uploads'),
+            path.resolve(process.cwd(), 'src/assets/images')
+          ];
+
+          locations.forEach(dir => {
+            try {
+              ensureDirectoryExists(dir);
+              fs.writeFileSync(path.join(dir, fileName), buffer);
+            } catch {}
+          });
+
+          return `/uploads/${fileName}`;
         }
       } catch (err) {
         console.error(`Failed to save base64 image (${prefix}) to disk:`, err);
